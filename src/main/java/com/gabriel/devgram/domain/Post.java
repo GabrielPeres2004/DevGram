@@ -8,7 +8,9 @@ import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "posts")
@@ -27,11 +29,6 @@ public class Post implements Serializable {
     protected String content;
 
     protected String imageUrl;
-
-    @ElementCollection
-    @CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
-    @Column(name = "tag")
-    protected Set<String> tags = new LinkedHashSet<>();
 
     @Column(length = 150)
     protected String location;
@@ -64,12 +61,11 @@ public class Post implements Serializable {
         super();
     }
 
-    public Post(Long id, String title, String content, String imageUrl, Set<String> tags, String location, Visibility visibility, Boolean edited, LocalDateTime createdAt, LocalDateTime updatedAt, User user, List<Commentary> commentary, List<Like> like) {
+    public Post(Long id, String title, String content, String imageUrl, String location, Visibility visibility, Boolean edited, LocalDateTime createdAt, LocalDateTime updatedAt, User user, List<Commentary> commentary, List<Like> like) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
-        this.tags = tags;
         this.location = location;
         this.visibility = visibility;
         this.edited = edited;
@@ -110,14 +106,6 @@ public class Post implements Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public Set<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<String> tags) {
-        this.tags = tags;
     }
 
     public String getLocation() {
