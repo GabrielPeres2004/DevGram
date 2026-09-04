@@ -38,11 +38,8 @@ public class Commentary implements Serializable {
         super();
     }
 
-    public Commentary(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, User user, Post post) {
-        this.id = id;
+    public Commentary(String content, User user, Post post) {
         this.content = content;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.user = user;
         this.post = post;
     }

@@ -45,11 +45,9 @@ public class Like implements Serializable {
         super();
     }
 
-    public Like(Long id, User user, Post post, LocalDateTime createdAt) {
-        this.id = id;
+    public Like( User user, Post post) {
         this.user = user;
         this.post = post;
-        this.createdAt = createdAt;
     }
 
     public Long getId() {
