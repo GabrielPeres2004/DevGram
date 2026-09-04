@@ -1,25 +1,15 @@
 package com.gabriel.devgram.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gabriel.devgram.domain.enums.Role;
+import jakarta.persistence.*;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import com.gabriel.devgram.domain.enums.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
@@ -75,18 +65,14 @@ public class User implements Serializable {
         super();
     }
 
-    public User(Long id, String username, String email, String password, String fullName, String bio,
-                String imageURL, Role role, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
+    public User(String username, String email, String password, String fullName, String bio,
+                String imageURL) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.fullName = fullName;
         this.bio = bio;
         this.imageURL = imageURL;
-        this.role = role;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Long getId() {
