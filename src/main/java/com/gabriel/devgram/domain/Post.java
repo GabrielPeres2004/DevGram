@@ -61,16 +61,13 @@ public class Post implements Serializable {
         super();
     }
 
-    public Post(Long id, String title, String content, String imageUrl, String location, Visibility visibility, Boolean edited, LocalDateTime createdAt, LocalDateTime updatedAt, User user, List<Commentary> commentary, List<Like> like) {
-        this.id = id;
+    public Post(String title, String content, String imageUrl, String location, Visibility visibility, Boolean edited,User user, List<Commentary> commentary, List<Like> like) {
         this.title = title;
         this.content = content;
         this.imageUrl = imageUrl;
         this.location = location;
         this.visibility = visibility;
         this.edited = edited;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.user = user;
         this.commentary = commentary;
         this.like = like;
