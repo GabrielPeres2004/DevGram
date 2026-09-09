@@ -29,6 +29,7 @@ public class Commentary implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     protected User user;
 
+    protected Boolean edited = false;
 
     @ManyToOne
     @JoinColumn(name = "post_id",nullable = false )
@@ -92,6 +93,13 @@ public class Commentary implements Serializable {
         this.post = post;
     }
 
+    public Boolean getEdited() {
+        return edited;
+    }
+
+    public void setEdited(Boolean edited) {
+        this.edited = edited;
+    }
 
     @Override
     public boolean equals(Object o) {

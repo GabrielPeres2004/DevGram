@@ -24,6 +24,8 @@ public class CommentaryResponseDTO implements Serializable {
 
     protected String authorImageURL;
 
+    protected Boolean edited;
+
     protected Long postId;
 
     public CommentaryResponseDTO() {
@@ -39,6 +41,7 @@ public class CommentaryResponseDTO implements Serializable {
         this.authorUsername = commentary.getUser().getUsername();
         this.authorImageURL = commentary.getUser().getImageURL();
         this.postId = commentary.getPost().getId();
+        this.edited = commentary.getEdited();
     }
 
     public Long getId() {
@@ -103,5 +106,13 @@ public class CommentaryResponseDTO implements Serializable {
 
     public void setPostId(Long postId) {
         this.postId = postId;
+    }
+
+    public Boolean getEdited() {
+        return edited;
+    }
+
+    public void setEdited(Boolean edited) {
+        this.edited = edited;
     }
 }
