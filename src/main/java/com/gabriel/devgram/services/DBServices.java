@@ -4,10 +4,8 @@ import com.gabriel.devgram.domain.User;
 import com.gabriel.devgram.domain.enums.Role;
 import com.gabriel.devgram.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class DBServices {
@@ -15,13 +13,21 @@ public class DBServices {
     @Autowired
     private UserRepository userRepository;
 
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public void instanceDB(){
-        User user1 = new User(null, "gabrielperes", "gabriel@email.com", "123456",
-                "Gabriel Luis Ferreira Peres", " ", " ", Role.ADMIN,
-                LocalDateTime.of(2024, 1, 10, 10, 30), LocalDateTime.of(2024, 1, 10, 10, 30));
+        User user1 = new User(
+                "admin",
+                "admin@email.com",
+                encoder.encode("123456"),
+                "admin",
+                " ",
+                " "
+        );
 
-        userRepository.saveAll(List.of(user1));
+        user1.setRole(Role.ADMIN);
+
+        userRepository.save(user1);
     }
 
 }
