@@ -4,9 +4,11 @@ import com.gabriel.devgram.domain.Like;
 import com.gabriel.devgram.domain.Post;
 import com.gabriel.devgram.domain.User;
 import com.gabriel.devgram.repositories.LikeRepository;
+import com.gabriel.devgram.security.UserSS;
 import com.gabriel.devgram.services.exceptions.DataIntegrityViolationException;
 import com.gabriel.devgram.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +50,10 @@ public class LikeService {
 
     public Like create(Long postId) {
         Post post = postService.findById(postId);
-        User user = userService.findById(1L);
+
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
+        User user = userService.findById(userId);
 
         if (likeRepository.existsByPostIdAndUserId(postId, user.getId())) {
             throw new DataIntegrityViolationException("Você já curtiu este post.");
@@ -64,7 +69,9 @@ public class LikeService {
     @Transactional
     public void delete(Long postId) {
         postService.findById(postId);
-        Long userId = 1L;
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
+
         likeRepository.deleteByPostIdAndUserId(postId, userId);
     }
 }

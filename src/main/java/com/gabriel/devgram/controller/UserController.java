@@ -8,6 +8,7 @@ import com.gabriel.devgram.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -73,12 +74,12 @@ public class UserController {
         return ResponseEntity.ok().body(new UserResponseDTO(user));
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id){
-        String message = userService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        userService.delete(id);
 
-        return  ResponseEntity.ok().body(message);
+        return ResponseEntity.noContent().build();
     }
 
 

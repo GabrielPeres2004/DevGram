@@ -25,7 +25,7 @@ public class DBServices {
                 " "
         );
 
-        user1.setRole(Role.ADMIN);
+        user1.setRole(Role.USER);
 
         userRepository.save(user1);
     }

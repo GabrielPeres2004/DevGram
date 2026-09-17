@@ -5,10 +5,11 @@ import com.gabriel.devgram.domain.Post;
 import com.gabriel.devgram.domain.User;
 import com.gabriel.devgram.dtos.request.CommentaryRequestDTO;
 import com.gabriel.devgram.repositories.CommentaryRepository;
+import com.gabriel.devgram.security.UserSS;
 import com.gabriel.devgram.services.exceptions.DataIntegrityViolationException;
 import com.gabriel.devgram.services.exceptions.ObjectNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -50,7 +51,11 @@ public class CommentaryService {
 
     public Commentary create(Long postId, CommentaryRequestDTO commentaryRequestDTO) {
         Post post = postService.findById(postId);
-        User user = userService.findById(1L);
+
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
+
+        User user = userService.findById(userId);
 
         Commentary commentary = new Commentary();
 
@@ -64,7 +69,12 @@ public class CommentaryService {
 
     public Commentary update(Long id, CommentaryRequestDTO commentaryRequestDTO) {
         Commentary commentary = findById(id);
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
 
+        if (!commentary.getUser().getId().equals(userId)) {
+            throw new DataIntegrityViolationException("Você não tem permissão para editar este comentario.");
+        }
 
         commentary.setContent(commentaryRequestDTO.getContent());
         commentary.setEdited(true);
@@ -75,7 +85,8 @@ public class CommentaryService {
 
     public void delete(Long id) {
         Commentary commentary = findById(id);
-        Long userId = 1L;
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
 
         if (!commentary.getUser().getId().equals(userId)) {
             throw new DataIntegrityViolationException("Você não tem permissão para deletar este comentário.");

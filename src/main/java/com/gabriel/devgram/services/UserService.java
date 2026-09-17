@@ -5,9 +5,11 @@ import com.gabriel.devgram.domain.User;
 import com.gabriel.devgram.domain.enums.Role;
 import com.gabriel.devgram.dtos.request.UserRequestDTO;
 import com.gabriel.devgram.repositories.UserRepository;
+import com.gabriel.devgram.security.UserSS;
 import com.gabriel.devgram.services.exceptions.DataIntegrityViolationException;
 import com.gabriel.devgram.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -109,11 +111,22 @@ public class UserService {
 
     }
 
-    public String delete(Long id) {
-        this.findById(id);
+    public void delete(Long id) {
+        User userToDelete = this.findById(id);
 
-        userRepository.deleteById(id);
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User loggedUser = this.findById(userSS.getId());
 
-        return "Usuário deletado com sucesso.";
+        if (loggedUser.getRole() != Role.ADMIN) {
+            throw new DataIntegrityViolationException("Apenas administradores podem excluir usuários.");
+        }
+
+        if (loggedUser.getId().equals(userToDelete.getId())) {
+            throw new DataIntegrityViolationException("Você não pode excluir sua própria conta.");
+        }
+
+        userRepository.delete(userToDelete);
     }
+
+
 }

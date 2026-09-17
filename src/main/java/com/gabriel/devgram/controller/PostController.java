@@ -128,6 +128,7 @@ public class PostController {
         return ResponseEntity.ok().body(count);
     }
 
+
     @PostMapping()
     public ResponseEntity<PostResponseDTO> create(@Valid @RequestBody PostRequestDTO postRequestDTO){
         Post post = postService.create(postRequestDTO);

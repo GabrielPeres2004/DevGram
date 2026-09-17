@@ -6,9 +6,11 @@ import com.gabriel.devgram.domain.enums.Visibility;
 import com.gabriel.devgram.dtos.request.PostRequestDTO;
 import com.gabriel.devgram.dtos.request.PostUpdateRequestDTO;
 import com.gabriel.devgram.repositories.PostRepository;
+import com.gabriel.devgram.security.UserSS;
 import com.gabriel.devgram.services.exceptions.DataIntegrityViolationException;
 import com.gabriel.devgram.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -70,7 +72,9 @@ public class PostService {
     }
 
     public Post create(PostRequestDTO postRequestDTO) {
-        User user = userService.findById(1L);
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
+        User user = userService.findById(userId);
 
         Post post = new Post();
         post.setTitle(postRequestDTO.getTitle());
@@ -86,6 +90,12 @@ public class PostService {
 
     public Post update(Long id, PostUpdateRequestDTO postUpdateRequestDTO) {
         Post post = findById(id);
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new DataIntegrityViolationException("Você não tem permissão para editar este post.");
+        }
 
         post.setTitle(postUpdateRequestDTO.getTitle() != null ? postUpdateRequestDTO.getTitle() : post.getTitle());
         post.setContent(postUpdateRequestDTO.getContent() != null ? postUpdateRequestDTO.getContent() : post.getContent());
@@ -100,7 +110,8 @@ public class PostService {
 
     public void delete(Long id) {
         Post post = findById(id);
-        Long userId = 1L;
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
 
         if (!post.getUser().getId().equals(userId)) {
             throw new DataIntegrityViolationException("Você não tem permissão para deletar este post.");
