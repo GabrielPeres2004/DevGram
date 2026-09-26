@@ -1,5 +1,6 @@
 package com.gabriel.devgram.security;
 
+import com.gabriel.devgram.controller.exceptions.StandardError;
 import com.gabriel.devgram.dtos.request.CredentialsDTO;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -59,9 +60,19 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        StandardError error = new StandardError(
+                System.currentTimeMillis(),
+                401,
+                "Unauthorized",
+                "Email ou senha inválidos",
+                request.getRequestURI()
+        );
+
         response.setStatus(401);
         response.setContentType("application/json");
-        response.getWriter().append("{\"status\": 401, \"message\": \"Email ou senha inválidos\"}");
+        response.getWriter().append(new ObjectMapper().writeValueAsString(error));
     }
+
+
 
 }

@@ -1,8 +1,6 @@
 package com.gabriel.devgram.config;
 
-import com.gabriel.devgram.security.JWTAuthenticationFilter;
-import com.gabriel.devgram.security.JWTAuthorizationFilter;
-import com.gabriel.devgram.security.JWTUtil;
+import com.gabriel.devgram.security.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +29,12 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Autowired
+    private JWTAccessDeniedHandler jwtAccessDeniedHandler;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -58,8 +62,11 @@ public class SecurityConfig {
 
         http.csrf(csrf -> csrf.disable()).
                 headers(headers -> headers.frameOptions(frame -> frame.disable())).
-                sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
-                authorizeHttpRequests(auth -> auth
+                sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .exceptionHandling(exception -> exception
+                                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                                .accessDeniedHandler(jwtAccessDeniedHandler))
+                        .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
