@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.time.LocalDateTime;
@@ -23,6 +24,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -110,6 +114,17 @@ public class UserService {
         return userRepository.save(user);
 
     }
+
+
+    public User updateProfileImage(Long userId, MultipartFile file) {
+        User user = this.findById(userId);
+        String filename = fileStorageService.store(file, "users");
+        String imageURL = "/images/users/" + filename;
+        user.setImageURL(imageURL);
+        return userRepository.save(user);
+    }
+
+
 
     public void delete(Long id) {
         User userToDelete = this.findById(id);

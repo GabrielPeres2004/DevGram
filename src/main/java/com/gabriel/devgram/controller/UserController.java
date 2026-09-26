@@ -4,12 +4,15 @@ package com.gabriel.devgram.controller;
 import com.gabriel.devgram.domain.User;
 import com.gabriel.devgram.dtos.request.UserRequestDTO;
 import com.gabriel.devgram.dtos.response.UserResponseDTO;
+import com.gabriel.devgram.security.UserSS;
 import com.gabriel.devgram.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -35,12 +38,14 @@ public class UserController {
 
     }
 
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id){
         User user = userService.findById(id);
 
         return ResponseEntity.ok().body(new UserResponseDTO(user));
     }
+
 
     @GetMapping("/email")
     public ResponseEntity<UserResponseDTO> findByEmail(@RequestParam String email){
@@ -49,13 +54,16 @@ public class UserController {
         return ResponseEntity.ok().body(new UserResponseDTO(user));
     }
 
+
+
     @GetMapping("/username/exists")
     public ResponseEntity<Boolean> existsByUsername(@RequestParam String username){
         Boolean existsUsername  = userService.existsByUsername(username);
 
         return ResponseEntity.ok().body(existsUsername);
     }
-
+    
+ 
     @PostMapping
     public ResponseEntity<UserResponseDTO> create(@Valid @RequestBody UserRequestDTO userRequestDTO){
         User user = userService.create(userRequestDTO);
@@ -66,11 +74,18 @@ public class UserController {
         return ResponseEntity.created(uri).body(new UserResponseDTO(user));
 
     }
-
     @PutMapping(value = "/{id}")
     public ResponseEntity<UserResponseDTO> update(@Valid @RequestBody UserRequestDTO userRequestDTO, @PathVariable long id){
         User user = userService.update(id, userRequestDTO);
 
+        return ResponseEntity.ok().body(new UserResponseDTO(user));
+    }
+
+    @PostMapping(value = "/image")
+    public ResponseEntity<UserResponseDTO> uploadProfileImage(@RequestParam("file") MultipartFile file){
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
+        User user = userService.updateProfileImage(userId, file);
         return ResponseEntity.ok().body(new UserResponseDTO(user));
     }
 

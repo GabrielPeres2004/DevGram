@@ -12,6 +12,7 @@ import com.gabriel.devgram.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +26,9 @@ public class PostService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public List<Post> findAll() {
         return postRepository.findAll();
@@ -118,6 +122,22 @@ public class PostService {
         }
 
         postRepository.delete(post);
+    }
+
+    public Post updatePostImage(Long id, MultipartFile file) {
+        Post post = findById(id);
+
+        UserSS userSS = (UserSS) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long userId = userSS.getId();
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new DataIntegrityViolationException("Você não tem permissão para editar este post.");
+        }
+
+        String filename = fileStorageService.store(file, "posts");
+        String imageUrl = "/images/posts/" + filename;
+        post.setImageUrl(imageUrl);
+        return postRepository.save(post);
     }
 
 }

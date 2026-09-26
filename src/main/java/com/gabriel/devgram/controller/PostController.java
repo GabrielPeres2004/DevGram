@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -137,11 +138,21 @@ public class PostController {
         return ResponseEntity.created(uri).body(new PostResponseDTO(post));
     }
 
+    @PostMapping("/{id}/image")
+    public ResponseEntity<PostResponseDTO> uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file){
+        postService.updatePostImage(id, file);
+
+        return ResponseEntity.ok().body(new PostResponseDTO(postService.findById(id)));
+    }
+
+
     @PutMapping(value = "/{id}")
     public ResponseEntity<PostResponseDTO> update(@PathVariable Long id, @Valid @RequestBody PostUpdateRequestDTO postUpdateRequestDTO){
         Post post = postService.update(id, postUpdateRequestDTO);
         return ResponseEntity.ok().body(new PostResponseDTO(post));
     }
+
+
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id){
